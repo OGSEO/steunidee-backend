@@ -100,7 +100,6 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginUserInputDto loginUser) {
 
@@ -138,6 +137,13 @@ public class AuthController {
 
         // Return the response entity with the JWT token included in the response body
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{username}")
+    public Optional<User> getUser(@PathVariable String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+
+        return user;
     }
 
 
