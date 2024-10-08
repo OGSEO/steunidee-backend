@@ -1,32 +1,28 @@
 package nl.gelton.steunideebackend.model;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-
-import java.time.LocalDate;
 import java.util.Set;
-
 
 @Entity
 @NoArgsConstructor
 @Data
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     private String username;
     private String email;
+
+    @OneToOne
+    private UserAvatar userAvatar;
 
     @JsonIgnore
     private String password;

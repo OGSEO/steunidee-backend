@@ -139,13 +139,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/user/{username}")
-    public Optional<User> getUser(@PathVariable String username) {
-        Optional<User> user = userRepository.findByUsername(username);
-
-        return user;
-    }
-
 
 //    @GetMapping("/user")
 //    public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal UserDetails userDetails) {

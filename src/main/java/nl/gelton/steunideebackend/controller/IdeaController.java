@@ -24,6 +24,11 @@ public class IdeaController {
         return ResponseEntity.ok().body(ideaService.getAllIdeas());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Idea> getIdeaById(@PathVariable long id) {
+        return ResponseEntity.ok().body(ideaService.getIdeaById(id));
+    }
+
     @PostMapping
     public ResponseEntity<Idea> createIdea(@RequestBody Idea idea) {
         URI uri = ServletUriComponentsBuilder
@@ -32,5 +37,11 @@ public class IdeaController {
                 .buildAndExpand(idea.getIdeaId())
                 .toUri();
         return ResponseEntity.created(uri).body(ideaService.createIdea(idea));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Idea> updateIdea(@RequestBody Idea idea, @PathVariable long id) {
+        Idea i = ideaService.updateIdea(id, idea);
+        return ResponseEntity.ok().body(i);
     }
 }

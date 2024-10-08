@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,5 +29,12 @@ public class ExceptionController {
                         fieldError.getField() + " " +
                         fieldError.getDefaultMessage())
                 .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = IOException.class)
+    public ResponseEntity<String> exeption(IOException exception){
+        String message = "Problemen met file opslag";
+        return ResponseEntity.internalServerError().body(message);
+
     }
 }
