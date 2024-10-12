@@ -1,69 +1,68 @@
 package nl.gelton.steunideebackend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.gelton.steunideebackend.enums.UserRole;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@NoArgsConstructor
 @Data
+@Entity
 @Table(name = "users")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
-    private String username;
+    @NotBlank(message = "Name is required")
+    private String name;
+
+    @Column(unique = true)
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @OneToOne
-    private UserAvatar userAvatar;
-
     @JsonIgnore
+    @NotBlank(message = "Password is required")
     private String password;
 
-    private boolean accountNonLocked = true;
-    private boolean accountNonExpired = true;
-    private boolean credentialsNonExpired = true;
-    private boolean enabled = true;
+    private UserRole role;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "roleId", referencedColumnName = "roleId")
-    @JsonBackReference
-    private Role role;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "address_id")
+    private Address address;
 
-    @OneToMany(mappedBy = "user")
-    private Set<Idea> ideas;
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "profile_image")
+    private ProfileImage profileImage;
 
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "political_party_id")
+    private PoliticalParty politicalParty;
 
-    public User(String username, String email, String password) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Idea> ideas = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "userLikes", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Idea> likedIdeas = new HashSet<>();
 
-//    public User(String username, String email) {
-//        this.username = username;
-//        this.email = email;
-//    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof User)) return false;
-//        return userId != null && userId.equals(((User) o).getUserId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return getClass().hashCode();
-//    }
+    private final LocalDateTime createdAt = LocalDateTime.now();
+
 }
 
 

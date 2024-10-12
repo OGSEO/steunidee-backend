@@ -1,18 +1,15 @@
 package nl.gelton.steunideebackend.controller;
 
 import jakarta.validation.Valid;
-import nl.gelton.steunideebackend.dto.LoginUserOutputDto;
-import nl.gelton.steunideebackend.dto.MessageResponse;
-import nl.gelton.steunideebackend.dto.input.LoginUserInputDto;
-import nl.gelton.steunideebackend.dto.input.RegisterUserInputDto;
-import nl.gelton.steunideebackend.model.AppRole;
-import nl.gelton.steunideebackend.model.Role;
+import lombok.RequiredArgsConstructor;
+import nl.gelton.steunideebackend.dto.LoginRequest;
+import nl.gelton.steunideebackend.dto.Response;
+import nl.gelton.steunideebackend.dto.input.UserInputDto;
 import nl.gelton.steunideebackend.model.User;
-import nl.gelton.steunideebackend.repository.RoleRepository;
 import nl.gelton.steunideebackend.repository.UserRepository;
-import nl.gelton.steunideebackend.security.jwt.JwtUtils;
-//import nl.gelton.steunideebackend.service.UserService;
-import org.springframework.http.*;
+//import nl.gelton.steunideebackend.service.impl.UserService;
+import nl.gelton.steunideebackend.service.interf.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,116 +25,22 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    private final JwtUtils jwtUtils;
-    private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-//    private final UserService userService;
-
-    public AuthController(JwtUtils jwtUtils,
-                          AuthenticationManager authenticationManager,
-                          UserRepository userRepository,
-                          RoleRepository roleRepository,
-                          PasswordEncoder passwordEncoder
-//                          UserService userService
-    ) {
-        this.jwtUtils = jwtUtils;
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-//        this.userService = userService;
-    }
-
+    private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserInputDto registerUser) {
-        if (userRepository.existsByUsername(registerUser.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-        }
-
-        if (userRepository.existsByEmail(registerUser.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        // Create new user's account
-        User newUser = new User(
-                registerUser.getUsername(),
-                registerUser.getEmail(),
-                passwordEncoder.encode(registerUser.getPassword())
-        );
-
-        Set<String> strRoles = registerUser.getRole();
-
-        Role role;
-
-        // Set default Role USER
-        if (strRoles == null || strRoles.isEmpty()) {
-            role = roleRepository.findByRoleName(AppRole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        } else {
-            String roleStr = strRoles.iterator().next();
-            if (roleStr.equals("admin")) {
-                role = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            } else {
-                role = roleRepository.findByRoleName(AppRole.ROLE_USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            }
-        }
-
-        newUser.setAccountNonLocked(true);
-        newUser.setAccountNonExpired(true);
-        newUser.setCredentialsNonExpired(true);
-        newUser.setEnabled(true);
-
-        newUser.setRole(role);
-        userRepository.save(newUser);
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    public ResponseEntity<Response> registerUser(@RequestBody UserInputDto registerRequest) {
+        return ResponseEntity.ok(userService.registerUser(registerRequest));
     }
-
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginUserInputDto loginUser) {
-
-        Authentication authentication;
-
-        try {
-            authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(
-                            loginUser.getUsername(),
-                            loginUser.getPassword()));
-        } catch (AuthenticationException exception) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("message", "Bad credentials");
-            map.put("status", false);
-            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
-        }
-
-        // Set the authentication
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-        // Specific to our implemetation
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
-
-        // Collect roles from the UserDetails
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        // Prepare the response body, now including the JWT token directly in the body
-        LoginUserOutputDto response = new LoginUserOutputDto(userDetails.getUsername(),
-                roles, jwtToken);
-
-        // Return the response entity with the JWT token included in the response body
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Response> loginUser(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(userService.loginUser(loginRequest));
     }
+
+
+
 
 
 //    @GetMapping("/user")

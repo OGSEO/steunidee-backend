@@ -1,6 +1,6 @@
-package nl.gelton.steunideebackend.service;
+package nl.gelton.steunideebackend.service.impl;
 
-import nl.gelton.steunideebackend.model.UserAvatar;
+import nl.gelton.steunideebackend.model.ProfileImage;
 import nl.gelton.steunideebackend.repository.FileUploadRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -39,7 +39,7 @@ public class AvatarService {
 
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        fileUploadRepository.save(new UserAvatar(fileName));
+        fileUploadRepository.save(new ProfileImage(fileName));
         return fileName;
     }
 

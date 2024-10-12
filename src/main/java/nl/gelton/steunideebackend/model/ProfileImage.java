@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAvatar {
+public class ProfileImage {
 
 
     /* Het opgeslagen bestand staat niet in deze klasse opgeslagen.
@@ -21,8 +21,8 @@ public class UserAvatar {
     @Id
     private String fileName;
 
-    public String getFileName() {
-        return fileName;
-    }
+//    public String getFileName() {
+//        return fileName;
+//    }
 
 }
