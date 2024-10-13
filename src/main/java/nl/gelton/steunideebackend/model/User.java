@@ -40,7 +40,7 @@ public class User {
 
     private UserRole role;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "user")
     @JoinColumn(name = "address_id")
     private Address address;
 

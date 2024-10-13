@@ -39,14 +39,14 @@ public class UserServiceImpl implements UserService {
     public Response registerUser(UserInputDto registrationRequest) {
         UserRole role = UserRole.CITIZEN;
 
-        if (registrationRequest.getRole() != null && registrationRequest.getRole().equals("politician")) {
+        if (registrationRequest.getRole() == UserRole.POLITICIAN) {
             role = UserRole.POLITICIAN;
         }
         User user = User.builder()
                 .name(registrationRequest.getName())
                 .email(registrationRequest.getEmail())
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .role(registrationRequest.getRole())
+                .role(role)
                 .build();
 
         User savedUser = userRepository.save(user);
