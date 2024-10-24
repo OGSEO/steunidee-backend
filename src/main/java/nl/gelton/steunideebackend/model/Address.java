@@ -2,17 +2,17 @@ package nl.gelton.steunideebackend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "addresses")
-public class Address {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Address extends BaseEntity{
 
     private String street;
     private String zipCode;
@@ -21,8 +21,4 @@ public class Address {
 
     @OneToOne(fetch = FetchType.EAGER)
     private User user;
-
-    private final LocalDateTime createdAt = LocalDateTime.now();
-
-
 }

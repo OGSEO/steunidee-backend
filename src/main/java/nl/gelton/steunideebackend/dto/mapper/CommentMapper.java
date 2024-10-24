@@ -10,6 +10,7 @@ public class CommentMapper {
     public static Comment fromInputDtoToModel(CommentInputDto commentInputDto) {
         Comment comment = new Comment();
         comment.setContent(commentInputDto.getContent());
+        comment.setName(commentInputDto.getName());
         return comment;
     }
 
@@ -18,6 +19,8 @@ public class CommentMapper {
         commentOutputDto.setId(comment.getId());
         commentOutputDto.setContent(comment.getContent());
         commentOutputDto.setCreatedAt(comment.getCreatedAt());
+        commentOutputDto.setName(comment.getName());
+        commentOutputDto.setIdea(IdeaMapper.fromModelToOutputDto(comment.getIdea()));
         return commentOutputDto;
     }
 

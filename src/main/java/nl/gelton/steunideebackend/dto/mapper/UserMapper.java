@@ -4,6 +4,7 @@ import nl.gelton.steunideebackend.dto.input.CommentInputDto;
 import nl.gelton.steunideebackend.dto.input.UserInputDto;
 import nl.gelton.steunideebackend.dto.output.AddressOutputDto;
 import nl.gelton.steunideebackend.dto.output.CommentOutputDto;
+import nl.gelton.steunideebackend.dto.output.IdeaOutputDto;
 import nl.gelton.steunideebackend.dto.output.UserOutputDto;
 import nl.gelton.steunideebackend.model.Comment;
 import nl.gelton.steunideebackend.model.User;
@@ -35,5 +36,6 @@ public class UserMapper {
         }
         return userOutputDto;
     }
+
 
 }

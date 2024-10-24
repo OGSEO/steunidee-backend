@@ -1,31 +1,28 @@
 package nl.gelton.steunideebackend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "comments")
-public class Comment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private long id;
+public class Comment extends BaseEntity{
 
     private String content;
+    private String Name;
+
 
     @ManyToOne
     @JoinColumn(name = "idea_id")
     private Idea idea;
 
-    @ManyToOne
-    @JoinColumn(name= "user_id")
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name= "user_id")
+//    private User user;
 
-    private final LocalDateTime createdAt = LocalDateTime.now();
 }

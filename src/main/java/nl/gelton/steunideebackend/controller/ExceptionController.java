@@ -5,9 +5,13 @@ import nl.gelton.steunideebackend.exception.InvalidCredentialsException;
 import nl.gelton.steunideebackend.exception.RecordNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @ControllerAdvice
@@ -43,17 +47,18 @@ public class ExceptionController {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-//    public ResponseEntity<List<String>> exception(MethodArgumentNotValidException exception) {
-//        return new ResponseEntity<>(exception
-//                .getBindingResult()
-//                .getFieldErrors()
-//                .stream()
-//                .map(fieldError ->
-//                        fieldError.getField() + " " +
-//                        fieldError.getDefaultMessage())
-//                .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<List<String>> exception(MethodArgumentNotValidException exception) {
+        return new ResponseEntity<>(exception
+                .getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError ->
+                        fieldError.getField() + " " +
+                        fieldError.getDefaultMessage())
+                .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+    }
+
 //
 //    @ExceptionHandler(value = IOException.class)
 //    public ResponseEntity<String> exeption(IOException exception){

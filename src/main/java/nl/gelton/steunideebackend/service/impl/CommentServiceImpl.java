@@ -5,15 +5,23 @@ import lombok.extern.slf4j.Slf4j;
 import nl.gelton.steunideebackend.dto.Response;
 import nl.gelton.steunideebackend.dto.input.CommentInputDto;
 import nl.gelton.steunideebackend.dto.mapper.CommentMapper;
+import nl.gelton.steunideebackend.dto.mapper.IdeaMapper;
 import nl.gelton.steunideebackend.dto.output.CommentOutputDto;
 import nl.gelton.steunideebackend.exception.RecordNotFoundException;
 import nl.gelton.steunideebackend.model.Comment;
+import nl.gelton.steunideebackend.model.Idea;
+import nl.gelton.steunideebackend.model.User;
 import nl.gelton.steunideebackend.repository.CommentRepository;
+import nl.gelton.steunideebackend.repository.IdeaRepository;
+import nl.gelton.steunideebackend.repository.UserRepository;
 import nl.gelton.steunideebackend.service.interf.CommentService;
+import nl.gelton.steunideebackend.service.interf.IdeaService;
+import nl.gelton.steunideebackend.service.interf.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +29,11 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final IdeaRepository ideaRepository;
 
     @Override
-    public Response getAllComments() {
-        List<Comment> comments = commentRepository.findAll();
+    public Response getAllComments(Long ideaId) {
+        List<Comment> comments = commentRepository.findByIdeaId(ideaId);
         List<CommentOutputDto> commentOutputDtos = new ArrayList<>();
 
         for (Comment comment : comments) {
@@ -53,7 +62,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Response createComment(CommentInputDto commentInputDto) {
-        Comment comment = commentRepository.save(CommentMapper.fromInputDtoToModel(commentInputDto));
+
+        Idea idea = ideaRepository.findById(commentInputDto.getIdeaId()).orElseThrow(() -> new RecordNotFoundException("Idea not found!"));
+        List<Comment> ideaComments = idea.getComments();
+        Comment comment = CommentMapper.fromInputDtoToModel(commentInputDto);
+        ideaComments.add(comment);
+        idea.setComments(ideaComments);
+        comment.setIdea(idea);
+        ideaRepository.save(idea);
+        commentRepository.save(comment);
+
         return Response.builder()
                 .statusCode(200)
                 .statusMessage("Comment Party Created Successfully")

@@ -22,8 +22,8 @@ public class CommentController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<Response> getAllIdeas() {
-        return ResponseEntity.ok(commentService.getAllComments());
+    public ResponseEntity<Response> getAllIdeas(@RequestParam Long ideaId) {
+        return ResponseEntity.ok(commentService.getAllComments(ideaId));
     }
 
     @PutMapping("/update/{commentId}")

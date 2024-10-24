@@ -1,12 +1,11 @@
 package nl.gelton.steunideebackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import nl.gelton.steunideebackend.enums.UserRole;
 
 import java.time.LocalDateTime;
@@ -15,17 +14,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "users")
-@Builder
+@SuperBuilder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Table(name = "users")
+public class User extends BaseEntity{
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -34,7 +30,7 @@ public class User {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @JsonIgnore
+
     @NotBlank(message = "Password is required")
     private String password;
 
@@ -52,16 +48,16 @@ public class User {
     @JoinColumn(name = "political_party_id")
     private PoliticalParty politicalParty;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Idea> ideas = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "userLikes", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ManyToMany(mappedBy = "userLikes", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Idea> likedIdeas = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Comment> comments = new ArrayList<>();
-
-    private final LocalDateTime createdAt = LocalDateTime.now();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    private List<Comment> comments = new ArrayList<>();
 
 }
 

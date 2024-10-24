@@ -1,6 +1,7 @@
 package nl.gelton.steunideebackend.config;
 
 import lombok.RequiredArgsConstructor;
+import nl.gelton.steunideebackend.enums.UserRole;
 import nl.gelton.steunideebackend.model.*;
 import nl.gelton.steunideebackend.repository.IdeaRepository;
 import nl.gelton.steunideebackend.repository.UserRepository;
@@ -36,7 +37,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**", "/idea/**", "/political-party/**", "/comment/**").permitAll()
+                        .requestMatchers("/auth/**", "/idea/**", "/political-party/**", "/comment/**", "/action/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
